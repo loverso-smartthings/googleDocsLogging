@@ -94,7 +94,7 @@ def childStartPage() {
     	}
     
     	section ("Technical settings") {
-        	input "queueTime", "enum", title:"Time to queue events before pushing to Google (in minutes)", options: ["0", "1", "5", "10", "15"], defaultValue:"5"
+        	input "queueTime", "enum", title:"Time to queue events before pushing to Google (in seconds)", options: ["0", "10", "15", "20", "30", "60", "120", "300", "600", "900"], defaultValue:"30"
         	input "resetVals", "enum", title:"Reset the state values (queue, schedule, etc)", options: ["yes", "no"], defaultValue: "no"
     	}
         
@@ -314,7 +314,7 @@ def scheduleQueue() {
     }
     
     if (!atomicState.scheduled) {
-        runIn(settings.queueTime.toInteger() * 60, processQueue)
+        runIn(settings.queueTime.toInteger(), processQueue)
         atomicState.scheduled=true
         atomicState.lastSchedule=now()
     } 
