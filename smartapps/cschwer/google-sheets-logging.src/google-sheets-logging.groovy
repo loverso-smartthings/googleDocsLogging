@@ -73,13 +73,17 @@ def childStartPage() {
         	input "locks", "capability.lock", title: "Locks", multiple: true, required: false
         	input "lockLogType", "enum", title: "Values to log", options: ["locked/unlocked", "true/false", "1/0"], defaultValue: "locked/unlocked", required: true, multiple: false
     	}
-    
+
+        section("Switches to Log") {
+           input "switches", "capability.switch", title: "Switches", required: false, multiple: true
+           input "switchLogType", "enum", title: "Values to log", options: ["on/off", "true/false", "1/0"], defaultValue: "on/off", required: true, multiple: false
+        }
+		
     	section("Log Other Devices") {
         	input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", required: false, multiple: true
         	input "humidities", "capability.relativeHumidityMeasurement", title: "Humidity Sensors", required: false, multiple: true
         	input "illuminances", "capability.illuminanceMeasurement", title: "Illuminance Sensors", required: false, multiple: true
         	input "presenceSensors", "capability.presenceSensor", title: "Presence Sensors", required: false, multiple: true
-        	input "switches", "capability.switch", title: "Switches", required: false, multiple: true
         	input "dimmerSwitches", "capability.switchLevel", title: "Dimmer Switches", required: false, multiple: true
         	input "energyMeters", "capability.energyMeter", title: "Energy Meters", required: false, multiple: true
         	input "powerMeters", "capability.powerMeter", title: "Power Meters", required: false, multiple: true
@@ -156,7 +160,7 @@ def initChild() {
     subscribe(humidities, "humidity", handleNumberEvent)
     subscribe(illuminances, "illuminance", handleNumberEvent)
     subscribe(presenceSensors, "presence", handleStringEvent)
-    subscribe(switches, "switch", handleStringEvent)
+    subscribe(switches, "switch", handleSwitchEvent)
     subscribe(dimmerSwitches, "switch", handleStringEvent)
     subscribe(dimmerSwitches, "level", handleNumberEvent)
     if (sensors != null && sensorAttributes != null) {
@@ -181,6 +185,21 @@ log.debug "handling string event ${evt}"
         queueValue(evt) { it }
     } else {
         sendValue(evt) { it }
+    }
+}
+
+def handleSwitchEvent(evt) {
+    // default to on/off, the value of the event
+    def convertClosure = { it }
+    if (switchLogType == "true/false")
+        convertClosure = { it == "on" ? "true" : "false" }
+    else if (switchLogType == "1/0")
+        convertClosure = { it == "on" ? "1" : "0" }
+
+    if (settings.queueTime.toInteger() > 0) {
+        queueValue(evt, convertClosure)
+    } else {
+        sendValue(evt, convertClosure)
     }
 }
 
