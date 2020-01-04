@@ -3,7 +3,18 @@ function doGet(request) {
   if(request != null) {
 
     var ss = SpreadsheetApp.openById("REPLACE ME WITH SPREADSHEET ID");
-    var sheet = ss.getSheetByName("Sheet1");
+    
+    // rotate to new sheet each month
+    var monthSheetName = Utilities.formatDate(new Date(), "GMT+5", "yyyy-MM")
+    var sheet = ss.getSheetByName(monthSheetName);
+    if (!sheet) {
+      ss.insertSheet(monthSheetName);
+      sheet = ss.getSheetByName(monthSheetName);
+      initRow = new Array(1);
+      initRow[0]="Time";
+      sheet.appendRow(initRow);
+    }
+
     var firstRowRange = sheet.getRange(1, 1, 1, sheet.getLastColumn());
   
     var sheetHeaders=firstRowRange.getValues();
