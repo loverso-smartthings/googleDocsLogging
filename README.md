@@ -22,7 +22,7 @@
  3. On line 4, Replace "REPLACE ME WITH SPREADSHEET ID" with sheet id from step 3  
    ![alt tag](img/stgsl6.png)
 
- 4. If you changed the name of the sheet (the name in the tab at the bottom of the spreadsheet, not the name of the file), update it on line 5. (defaults to "Sheet1").
+ 4. The script will create a sheet per month in the format YYYY-mm (eg: 2020-01).
 
 6. Deploy helper script as webapp
  1. Deploy webapp: Click Publish -> Deploy as web app  
